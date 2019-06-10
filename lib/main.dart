@@ -50,6 +50,10 @@ class _MyHomePageState extends State<MyHomePage> {
           widget.title,
           style: TextStyle(color: Colors.white),
         ),
+        leading: Image.asset(
+              'assets/smiley.png',
+              fit: BoxFit.contain
+            ),
       ),
       body: Center(
         child: Container(
