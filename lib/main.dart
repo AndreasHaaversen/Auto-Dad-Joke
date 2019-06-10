@@ -46,7 +46,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Colors.white),),
+        title: Text(
+          widget.title,
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Center(
         child: Container(
@@ -71,8 +74,14 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _newJoke,
         tooltip: 'New joke',
-        icon: Icon(Icons.insert_emoticon, color: Colors.white,),
-        label: Text('New joke', style: TextStyle(color: Colors.white),),
+        icon: Icon(
+          Icons.insert_emoticon,
+          color: Colors.white,
+        ),
+        label: Text(
+          'New joke',
+          style: TextStyle(color: Colors.white),
+        ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
