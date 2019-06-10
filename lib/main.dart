@@ -8,11 +8,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Auto Dad Joke',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.amber,
+        fontFamily: 'Roboto',
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Auto Dad Joke'),
     );
   }
 }
@@ -45,26 +46,33 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title, style: TextStyle(color: Colors.white),),
       ),
       body: Center(
-        child: FutureBuilder<Joke>(
-          future: _joke,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Text(snapshot.data.joke);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
+        child: Container(
+          padding: EdgeInsets.all(25.0),
+          child: FutureBuilder<Joke>(
+            future: _joke,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text(
+                  snapshot.data.joke,
+                  style: TextStyle(fontSize: 20),
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
 
-            return CircularProgressIndicator();
-          },
-        )
+              return CircularProgressIndicator();
+            },
+          ),
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _newJoke,
         tooltip: 'New joke',
-        child: Icon(Icons.text_fields),
+        icon: Icon(Icons.insert_emoticon, color: Colors.white,),
+        label: Text('New joke', style: TextStyle(color: Colors.white),),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
