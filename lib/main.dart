@@ -1,12 +1,7 @@
 import 'package:auto_dad_joke/blocs/joke_bloc.dart';
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'blocs/joke.dart';
 import 'blocs/database.dart';
-=======
-import 'joke.dart';
-import 'database.dart';
->>>>>>> e23391c4b03a5a45b2e712689631bff8765b14cc
 
 void main() {
   final jokeBloc = JokeBloc();
@@ -47,7 +42,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-<<<<<<< HEAD
   void _handleFavorite(Joke joke) {
       setState(() {
         if (!joke.isFavorite) {
@@ -60,50 +54,6 @@ class _MyHomePageState extends State<MyHomePage> {
         joke.isFavorite = !joke.isFavorite;
 
       });
-=======
-  bool _isFavorite = false;
-
-  Future<bool> _checkFavorite(Joke joke) async {
-    var favorite = await DBProvider.db.getJoke(joke.id);
-    return favorite != null;
-  }
-
-  Future<bool> _checkFutureFavorite(Future<Joke> joke) async {
-    var localJoke = await joke;
-    var favorite = await DBProvider.db.getJoke(localJoke.id);
-    return favorite != null;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _joke = fetchJoke();
-  }
-
-  void _newJoke() {
-    setState(() {
-      _joke = fetchJoke();
-      _checkFutureFavorite(_joke).then((result) {
-        _isFavorite = result;
-      });
-    });
-  }
-
-  void _handleFavorite(Joke joke) {
-    bool condition;
-    _checkFavorite(joke).then((result) {
-      condition = result;
-      setState(() {
-        if (condition) {
-          DBProvider.db.saveJoke(joke);
-          print("Saving");
-        } else {
-          DBProvider.db.deleteJoke(joke.id);
-          print("deleting");
-        }
-      });
-    });
->>>>>>> e23391c4b03a5a45b2e712689631bff8765b14cc
   }
 
   @override
@@ -135,11 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         style: TextStyle(fontSize: 20),
                       ),
                       IconButton(
-<<<<<<< HEAD
                         icon: (snapshot.data.isFavorite
-=======
-                        icon: (_isFavorite
->>>>>>> e23391c4b03a5a45b2e712689631bff8765b14cc
                             ? Icon(Icons.favorite)
                             : Icon(Icons.favorite_border)),
                         onPressed: () => _handleFavorite(snapshot.data),
