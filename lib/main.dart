@@ -33,6 +33,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _isFavorite = false;
 
+  Future<bool> _checkFavoriteWithFuture(Future<Joke> futureJoke) async {
+    Joke joke = await futureJoke;
+    var favorite = await DBProvider.db.getJoke(joke.id);
+    return favorite != null;
+  }
+
   Future<bool> _checkFavorite(Joke joke) async {
     var favorite = await DBProvider.db.getJoke(joke.id);
     return favorite != null;
@@ -41,20 +47,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _joke = fetchJoke().then((joke) {
-      _checkFavorite(joke).then((result) {
+    _joke = fetchJoke();
+    _checkFavoriteWithFuture(_joke).then((result) {
         _isFavorite = result;
-      });
     });
-    ;
   }
 
   void _newJoke() {
     setState(() {
-      _joke = fetchJoke().then((joke) {
-        _checkFavorite(joke).then((result) {
-          _isFavorite = result;
-        });
+      _joke = fetchJoke();
+       _checkFavoriteWithFuture(_joke).then((result) {
+        _isFavorite = result;
       });
     });
   }
