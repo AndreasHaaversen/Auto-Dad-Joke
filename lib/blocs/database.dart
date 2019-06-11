@@ -30,26 +30,26 @@ class DBProvider {
     });
   }
 
-  saveJoke(Joke joke) async {
+  Future<int> saveJoke(Joke joke) async {
     final db = await database;
     var res = await db.insert("Joke", joke.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
     return res;
   }
 
-  getJoke(String id) async {
+  Future<Joke> getJoke(String id) async {
     final db = await database;
     var res = await db.query("Joke", where: "id = ?", whereArgs: [id]);
     return res.isNotEmpty ? Joke.fromJson(res.first) : null;
   }
 
-  getAllJokes() async {
+  Future<List<Joke>> getAllJokes() async {
     final db = await database;
     var res = await db.query("Joke");
-    List<Joke> list = res.isNotEmpty ? res.toList().map((f) => Joke.fromJson(f)) : null;
+    List<Joke> list = res.isNotEmpty ? res.toList().map((f) => Joke.fromJson(f)).toList() : null;
     return list;
   }
 
-  deleteJoke(String id) async {
+  Future<int> deleteJoke(String id) async {
     final db = await database;
     db.delete("Joke", where: "id = ?", whereArgs: [id]);
   }

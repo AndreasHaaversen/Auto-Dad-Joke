@@ -1,10 +1,21 @@
+import 'package:auto_dad_joke/blocs/joke_bloc.dart';
 import 'package:flutter/material.dart';
-import 'joke.dart';
-import 'database.dart';
+import 'blocs/joke.dart';
+import 'blocs/database.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  final jokeBloc = JokeBloc();
+  runApp(MyApp(bloc: jokeBloc));
+  }
 
 class MyApp extends StatelessWidget {
+  final JokeBloc bloc;
+
+  MyApp({
+    Key key,
+    this.bloc
+  }) : super(key: key);
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -14,67 +25,35 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.amber,
         fontFamily: 'Roboto',
       ),
-      home: MyHomePage(title: 'Auto Dad Joke'),
+      home: MyHomePage(title: 'Auto Dad Joke', bloc: this.bloc ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key, this.title, this.bloc}) : super(key: key);
 
   final String title;
+  final JokeBloc bloc;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<Joke> _joke;
-
-  bool _isFavorite = false;
-
-  Future<bool> _checkFavoriteWithFuture(Future<Joke> futureJoke) async {
-    Joke joke = await futureJoke;
-    var favorite = await DBProvider.db.getJoke(joke.id);
-    return favorite != null;
-  }
-
-  Future<bool> _checkFavorite(Joke joke) async {
-    var favorite = await DBProvider.db.getJoke(joke.id);
-    return favorite != null;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _joke = fetchJoke();
-    _checkFavoriteWithFuture(_joke).then((result) {
-        _isFavorite = result;
-    });
-  }
-
-  void _newJoke() {
-    setState(() {
-      _joke = fetchJoke();
-       _checkFavoriteWithFuture(_joke).then((result) {
-        _isFavorite = result;
-      });
-    });
-  }
 
   void _handleFavorite(Joke joke) {
-    _checkFavorite(joke).then((condition) {
       setState(() {
-        if (!condition) {
+        if (!joke.isFavorite) {
           DBProvider.db.saveJoke(joke);
           print("Saving");
         } else {
           DBProvider.db.deleteJoke(joke.id);
           print("deleting");
         }
-        _isFavorite = !condition;
+        joke.isFavorite = !joke.isFavorite;
+
       });
-    });
   }
 
   @override
@@ -93,10 +72,9 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Container(
           padding: EdgeInsets.all(25.0),
-          child: FutureBuilder<Joke>(
-            future: _joke,
+          child: StreamBuilder<Joke>(
+            stream: widget.bloc.joke,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -107,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         style: TextStyle(fontSize: 20),
                       ),
                       IconButton(
-                        icon: (_isFavorite
+                        icon: (snapshot.data.isFavorite
                             ? Icon(Icons.favorite)
                             : Icon(Icons.favorite_border)),
                         onPressed: () => _handleFavorite(snapshot.data),
@@ -117,8 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 } else if (snapshot.hasError) {
                   return NoConnectionWidget();
-                }
-              } else {
+                } else {
                 return CircularProgressIndicator();
               }
             },
@@ -126,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _newJoke,
+        onPressed: () => widget.bloc.getJoke.add(null),
         tooltip: 'New joke',
         icon: Icon(
           Icons.insert_emoticon,
