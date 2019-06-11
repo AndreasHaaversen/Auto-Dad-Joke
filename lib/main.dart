@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'joke.dart';
+import 'database.dart';
 
 void main() => runApp(MyApp());
 
@@ -30,6 +31,19 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Future<Joke> _joke;
 
+  bool _isFavorite = false;
+
+  Future<bool> _checkFavorite(Joke joke) async {
+    var favorite = await DBProvider.db.getJoke(joke.id);
+    return favorite != null;
+  }
+
+  Future<bool> _checkFutureFavorite(Future<Joke> joke) async {
+    var localJoke = await joke;
+    var favorite = await DBProvider.db.getJoke(localJoke.id);
+    return favorite != null;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -39,6 +53,25 @@ class _MyHomePageState extends State<MyHomePage> {
   void _newJoke() {
     setState(() {
       _joke = fetchJoke();
+      _checkFutureFavorite(_joke).then((result) {
+        _isFavorite = result;
+      });
+    });
+  }
+
+  void _handleFavorite(Joke joke) {
+    bool condition;
+    _checkFavorite(joke).then((result) {
+      condition = result;
+      setState(() {
+        if (condition) {
+          DBProvider.db.saveJoke(joke);
+          print("Saving");
+        } else {
+          DBProvider.db.deleteJoke(joke.id);
+          print("deleting");
+        }
+      });
     });
   }
 
@@ -63,9 +96,22 @@ class _MyHomePageState extends State<MyHomePage> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {
-                  return Text(
-                    snapshot.data.joke,
-                    style: TextStyle(fontSize: 20),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        snapshot.data.joke,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      IconButton(
+                        icon: (_isFavorite
+                            ? Icon(Icons.favorite)
+                            : Icon(Icons.favorite_border)),
+                        onPressed: () => _handleFavorite(snapshot.data),
+                        color: Colors.red,
+                      )
+                    ],
                   );
                 } else if (snapshot.hasError) {
                   return getNoConnectionWidget();
