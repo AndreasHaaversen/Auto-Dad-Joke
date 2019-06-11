@@ -41,7 +41,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _joke = fetchJoke();
+    _joke = fetchJoke().then((joke) {
+      _checkFavorite(joke).then((result) {
+        _isFavorite = result;
+      });
+    });
+    ;
   }
 
   void _newJoke() {
