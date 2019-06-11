@@ -70,9 +70,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 } else if (snapshot.hasError) {
                   return getNoConnectionWidget();
                 }
+              } else {
+                return CircularProgressIndicator();
               }
-
-              return CircularProgressIndicator();
             },
           ),
         ),
