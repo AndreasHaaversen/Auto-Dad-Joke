@@ -33,12 +33,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    this._joke = fetchJoke();
+    _joke = fetchJoke();
   }
 
   void _newJoke() {
     setState(() {
-      this._joke = fetchJoke();
+      _joke = fetchJoke();
     });
   }
 
@@ -51,11 +51,8 @@ class _MyHomePageState extends State<MyHomePage> {
           style: TextStyle(color: Colors.white),
         ),
         leading: Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Image.asset(
-                'assets/smiley.png',
-                fit: BoxFit.contain
-              ),
+          padding: EdgeInsets.all(10.0),
+          child: Image.asset('assets/smiley.png', fit: BoxFit.contain),
         ),
       ),
       body: Center(
@@ -64,13 +61,15 @@ class _MyHomePageState extends State<MyHomePage> {
           child: FutureBuilder<Joke>(
             future: _joke,
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(
-                  snapshot.data.joke,
-                  style: TextStyle(fontSize: 20),
-                );
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  return Text(
+                    snapshot.data.joke,
+                    style: TextStyle(fontSize: 20),
+                  );
+                } else if (snapshot.hasError) {
+                  return getNoConnectionWidget();
+                }
               }
 
               return CircularProgressIndicator();
@@ -90,6 +89,25 @@ class _MyHomePageState extends State<MyHomePage> {
           style: TextStyle(color: Colors.white),
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget getNoConnectionWidget() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        SizedBox(
+          height: 60.0,
+          child: Container(
+            child: Icon(
+              Icons.signal_wifi_off,
+              size: 50,
+            ),
+          ),
+        ),
+        new Text("No Internet Connection", style: TextStyle(fontSize: 20)),
+      ],
     );
   }
 }
