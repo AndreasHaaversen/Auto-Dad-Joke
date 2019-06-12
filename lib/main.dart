@@ -1,46 +1,44 @@
 import 'package:auto_dad_joke/blocs/joke_bloc.dart';
+import 'package:auto_dad_joke/widgets/joke_list.dart';
 import 'package:flutter/material.dart';
 import 'blocs/joke.dart';
 import 'blocs/database.dart';
 
-void main() {
-  final jokeBloc = JokeBloc();
-  runApp(MyApp(bloc: jokeBloc));
-  }
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  final JokeBloc bloc;
-
-  MyApp({
-    Key key,
-    this.bloc
-  }) : super(key: key);
+  MyApp({Key key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Auto Dad Joke',
-      theme: ThemeData(
-        primarySwatch: Colors.amber,
-        fontFamily: 'Roboto',
+    return BlocProvider(
+      bloc: JokeBloc(),
+      child: MaterialApp(
+        title: 'Auto Dad Joke',
+        theme: ThemeData(
+          primarySwatch: Colors.amber,
+          fontFamily: 'Roboto',
+        ),
+        home: MyHomePage(title: 'Auto Dad Joke'),
       ),
-      home: MyHomePage(title: 'Auto Dad Joke', bloc: this.bloc ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title, this.bloc}) : super(key: key);
+  MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
-  final JokeBloc bloc;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int _currentIndex = 0;
+
+  final List<Widget> _children = [JokeWidget(), JokeListWidget()];
 
   @override
   Widget build(BuildContext context) {
@@ -55,20 +53,37 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Image.asset('assets/smiley.png', fit: BoxFit.contain),
         ),
       ),
-      body: JokeWidget(bloc: widget.bloc,),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => widget.bloc.getJoke.add(null),
-        tooltip: 'New joke',
-        icon: Icon(
-          Icons.insert_emoticon,
-          color: Colors.white,
-        ),
-        label: Text(
-          'New joke',
-          style: TextStyle(color: Colors.white),
-        ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: _children[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.amber,
+        selectedItemColor: Colors.white,
+        currentIndex: _currentIndex,
+        items: [
+          BottomNavigationBarItem(
+              title: Text('Joke'), icon: Icon(Icons.insert_emoticon)),
+          BottomNavigationBarItem(
+              title: Text('Favorite jokes'), icon: Icon(Icons.list))
+        ],
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
+      floatingActionButton: _currentIndex == 0
+          ? FloatingActionButton.extended(
+              onPressed: () => BlocProvider.of(context).bloc.getJoke.add(null),
+              tooltip: 'New joke',
+              icon: Icon(
+                Icons.insert_emoticon,
+                color: Colors.white,
+              ),
+              label: Text(
+                'New joke',
+                style: TextStyle(color: Colors.white),
+              ),
+            )
+          : null, // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
-

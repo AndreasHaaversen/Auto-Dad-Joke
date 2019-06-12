@@ -35,10 +35,6 @@ String jokeToJson(Joke data) {
 }
 
 class JokeWidget extends StatefulWidget {
-  final JokeBloc bloc;
-
-  const JokeWidget({Key key, this.bloc}) : super(key: key);
-
   @override
   State<StatefulWidget> createState() => _JokeWidgetState();
 }
@@ -53,6 +49,7 @@ class _JokeWidgetState extends State<JokeWidget> {
         DBProvider.db.deleteJoke(joke.id);
         print("deleting");
       }
+      BlocProvider.of(context).bloc.getJokeList.add(null);
       joke.isFavorite = !joke.isFavorite;
     });
   }
@@ -63,7 +60,7 @@ class _JokeWidgetState extends State<JokeWidget> {
       child: Container(
         padding: EdgeInsets.all(25.0),
         child: StreamBuilder<Joke>(
-          stream: widget.bloc.joke,
+          stream: BlocProvider.of(context).bloc.joke,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Column(
