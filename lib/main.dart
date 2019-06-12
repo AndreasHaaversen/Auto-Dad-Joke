@@ -42,20 +42,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  void _handleFavorite(Joke joke) {
-      setState(() {
-        if (!joke.isFavorite) {
-          DBProvider.db.saveJoke(joke);
-          print("Saving");
-        } else {
-          DBProvider.db.deleteJoke(joke.id);
-          print("deleting");
-        }
-        joke.isFavorite = !joke.isFavorite;
-
-      });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,39 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Image.asset('assets/smiley.png', fit: BoxFit.contain),
         ),
       ),
-      body: Center(
-        child: Container(
-          padding: EdgeInsets.all(25.0),
-          child: StreamBuilder<Joke>(
-            stream: widget.bloc.joke,
-            builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        snapshot.data.joke,
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      IconButton(
-                        icon: (snapshot.data.isFavorite
-                            ? Icon(Icons.favorite)
-                            : Icon(Icons.favorite_border)),
-                        onPressed: () => _handleFavorite(snapshot.data),
-                        color: Colors.red,
-                      )
-                    ],
-                  );
-                } else if (snapshot.hasError) {
-                  return NoConnectionWidget();
-                } else {
-                return CircularProgressIndicator();
-              }
-            },
-          ),
-        ),
-      ),
+      body: JokeWidget(bloc: widget.bloc,),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => widget.bloc.getJoke.add(null),
         tooltip: 'New joke',
@@ -118,24 +72,3 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class NoConnectionWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        SizedBox(
-          height: 60.0,
-          child: Container(
-            child: Icon(
-              Icons.signal_wifi_off,
-              size: 50,
-            ),
-          ),
-        ),
-        new Text("No Internet Connection", style: TextStyle(fontSize: 20)),
-      ],
-    );
-  }
-}
