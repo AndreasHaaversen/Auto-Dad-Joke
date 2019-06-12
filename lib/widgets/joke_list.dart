@@ -1,6 +1,6 @@
 import 'package:auto_dad_joke/blocs/database.dart';
-import 'package:auto_dad_joke/blocs/joke.dart';
 import 'package:auto_dad_joke/blocs/joke_bloc.dart';
+import 'package:auto_dad_joke/models/joke.dart';
 import 'package:flutter/material.dart';
 
 class JokeListWidget extends StatelessWidget {
@@ -94,12 +94,5 @@ class _JokeListCardState extends State<JokeListCard> {
         ],
       ),
     );
-  }
-
-  void _showSnackbar(BuildContext context) {
-    final snackbar = SnackBar(
-      content: Text('Changes to the list are updated when you leave this page'),
-    );
-    Scaffold.of(context).showSnackBar(snackbar);
   }
 }

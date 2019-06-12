@@ -1,8 +1,8 @@
 import 'dart:io';
+import 'package:auto_dad_joke/models/joke.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
-import 'joke.dart';
 
 class DBProvider {
   DBProvider._();
@@ -51,6 +51,6 @@ class DBProvider {
 
   Future<int> deleteJoke(String id) async {
     final db = await database;
-    db.delete("Joke", where: "id = ?", whereArgs: [id]);
+    return db.delete("Joke", where: "id = ?", whereArgs: [id]);
   }
 }

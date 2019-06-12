@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:auto_dad_joke/models/joke.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
-import 'joke.dart';
 import 'database.dart';
 
 class JokeBloc {

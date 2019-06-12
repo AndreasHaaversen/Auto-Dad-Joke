@@ -1,8 +1,7 @@
 import 'package:auto_dad_joke/blocs/joke_bloc.dart';
+import 'package:auto_dad_joke/widgets/joke.dart';
 import 'package:auto_dad_joke/widgets/joke_list.dart';
 import 'package:flutter/material.dart';
-import 'blocs/joke.dart';
-import 'blocs/database.dart';
 
 void main() => runApp(MyApp());
 
