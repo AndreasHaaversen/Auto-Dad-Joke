@@ -72,8 +72,12 @@ class JokeBloc {
 
   Future<Null> _updateJokeList() async {
     final List<Joke> response = await DBProvider.db.getAllJokes();
-    response.forEach((joke) => joke.isFavorite = true);
-    _jokeList = response;
+    if (response != null) {
+        response.forEach((joke) => joke.isFavorite = true);
+        _jokeList = response;
+    } else {
+      _jokeList = [];
+    }
   }
 
   dispose() {
