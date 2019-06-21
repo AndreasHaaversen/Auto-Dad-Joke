@@ -32,8 +32,8 @@ class _JokeListWidgetState extends State<JokeListWidget> {
                   );
                 } else if (snapshot.hasError) {
                   return Text('Oups, an error has occured!');
-                } else if (snapshot.data.isEmpty) {
-                  return Text('No jokes haved been added to favorites yet. Go add some!');
+                } else if (snapshot.connectionState == ConnectionState.active && snapshot.data.isEmpty) {
+                  return Text('Oups!\nThere is nothing here yet.\nGo add some favorites!', textAlign: TextAlign.center,);
                 } else {
                   return CircularProgressIndicator();
                 }
