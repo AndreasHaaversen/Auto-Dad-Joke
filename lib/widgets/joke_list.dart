@@ -20,7 +20,7 @@ class _JokeListWidgetState extends State<JokeListWidget> {
               stream: BlocProvider.of(context).bloc.jokes,
               initialData: [],
               builder: ((context, snapshot) {
-                if (snapshot.hasData) {
+                if (snapshot.hasData && snapshot.data.isNotEmpty) {
                   return ListView.builder(
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index) {
@@ -32,6 +32,8 @@ class _JokeListWidgetState extends State<JokeListWidget> {
                   );
                 } else if (snapshot.hasError) {
                   return Text('Oups, an error has occured!');
+                } else if (snapshot.data.isEmpty) {
+                  return Text('No jokes haved been added to favorites yet. Go add some!');
                 } else {
                   return CircularProgressIndicator();
                 }

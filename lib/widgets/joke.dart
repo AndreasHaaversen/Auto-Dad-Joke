@@ -49,7 +49,6 @@ class _JokeWidgetState extends State<JokeWidget> {
                       children: <Widget>[
                         Text(
                           snapshot.data.joke,
-                          style: TextStyle(fontSize: 20),
                         ),
                         IconButton(
                           icon: (snapshot.data.isFavorite
@@ -94,7 +93,7 @@ class NoConnectionWidget extends StatelessWidget {
             ),
           ),
         ),
-        new Text("No Internet Connection", style: TextStyle(fontSize: 20)),
+        new Text("No Internet Connection"),
       ],
     );
   }

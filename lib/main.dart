@@ -18,6 +18,9 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.amber,
           fontFamily: 'Roboto',
+          textTheme: TextTheme(
+            body1: TextStyle(fontSize: 20)
+          )
         ),
         home: MyHomePage(title: 'Auto Dad Joke'),
       ),
