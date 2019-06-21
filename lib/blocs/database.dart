@@ -20,7 +20,7 @@ class DBProvider {
 
   initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "TestDB.db");
+    String path = join(documentsDirectory.path, "JokeDB.db");
     return await openDatabase(path, version: 1, onOpen: (db) {},
         onCreate: (Database db, int version) async {
       await db.execute("""CREATE TABLE Joke (
@@ -44,7 +44,7 @@ class DBProvider {
 
   Future<List<Joke>> getAllJokes() async {
     final db = await database;
-    var res = await db.query("Joke");
+    var res = await db.query("Joke", orderBy: 'id');
     List<Joke> list = res.isNotEmpty ? res.toList().map((f) => Joke.fromJson(f)).toList() : null;
     return list;
   }
