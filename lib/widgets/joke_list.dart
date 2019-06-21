@@ -13,27 +13,31 @@ class _JokeListWidgetState extends State<JokeListWidget> {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(25.0),
-        child: StreamBuilder(
-          stream: BlocProvider.of(context).bloc.jokes,
-          initialData: [],
-          builder: ((context, snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (context, index) {
-                  return JokeListCard(
-                    joke: snapshot.data[index],
-                    favoriteHandler: _handleFavorite,
+        child: Scrollbar(
+          child: Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: StreamBuilder(
+              stream: BlocProvider.of(context).bloc.jokes,
+              initialData: [],
+              builder: ((context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return JokeListCard(
+                        joke: snapshot.data[index],
+                        favoriteHandler: _handleFavorite,
+                      );
+                    },
                   );
-                },
-              );
-            } else if (snapshot.hasError) {
-              return Text('Oups, an error has occured!');
-            } else {
-              return CircularProgressIndicator();
-            }
-          }),
+                } else if (snapshot.hasError) {
+                  return Text('Oups, an error has occured!');
+                } else {
+                  return CircularProgressIndicator();
+                }
+              }),
+            ),
+          ),
         ),
       ),
     );
@@ -69,7 +73,8 @@ class JokeListCard extends StatefulWidget {
   final Joke joke;
   final Function favoriteHandler;
 
-  const JokeListCard({Key key, this.joke, this.favoriteHandler}) : super(key: key);
+  const JokeListCard({Key key, this.joke, this.favoriteHandler})
+      : super(key: key);
 
   @override
   _JokeListCardState createState() => _JokeListCardState();
