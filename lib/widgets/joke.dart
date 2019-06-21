@@ -21,6 +21,11 @@ class _JokeWidgetState extends State<JokeWidget> {
       BlocProvider.of(context).bloc.getJokeList.add(null);
       joke.isFavorite = !joke.isFavorite;
     });
+
+    final snackBar = SnackBar(
+      content: joke.isFavorite ? Text('Joke added to favorites.') : Text('Joke removed from favorites'),
+    );
+    Scaffold.of(context).showSnackBar(snackBar);
   }
 
   @override
