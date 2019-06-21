@@ -62,14 +62,6 @@ class JokeBloc {
     }
   }
 
-  getNewJoke() {
-    _updateJoke();
-  }
-
-  getNewJokeList() {
-    _updateJokeList();
-  }
-
   Future<Null> _updateJokeList() async {
     final List<Joke> response = await DBProvider.db.getAllJokes();
     if (response != null) {
