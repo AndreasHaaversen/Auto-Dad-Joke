@@ -16,33 +16,26 @@ class _JokeListWidgetState extends State<JokeListWidget> {
         child: Scrollbar(
           child: Padding(
             padding: const EdgeInsets.all(25.0),
-            child: StreamBuilder<bool>(
-              stream: BlocProvider.of(context).bloc.isLoadingJokeList,
-              builder: (context, snapshot) {
-                if (snapshot.hasData && !snapshot.data) {
-                  return StreamBuilder<List<Joke>>(
-                    stream: BlocProvider.of(context).bloc.jokes,
-                    initialData: [],
-                    builder: ((context, snapshot) {
-                      if (snapshot.hasData) {
-                        return ListView.builder(
-                          itemCount: snapshot.data.length,
-                          itemBuilder: (context, index) {
-                            return JokeListCard(
-                              joke: snapshot.data[index],
-                              favoriteHandler: _handleFavorite,
-                            );
-                          },
-                        );
-                      } else {
-                        return Text('Oups, an error has occured!');
-                      }
-                    }),
+            child: StreamBuilder<List<Joke>>(
+              stream: BlocProvider.of(context).bloc.jokes,
+              initialData: [],
+              builder: ((context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return JokeListCard(
+                        joke: snapshot.data[index],
+                        favoriteHandler: _handleFavorite,
+                      );
+                    },
                   );
+                } else if (snapshot.hasError) {
+                  return Text('Oups, an error has occured!');
                 } else {
                   return CircularProgressIndicator();
                 }
-              },
+              }),
             ),
           ),
         ),

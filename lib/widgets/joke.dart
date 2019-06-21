@@ -60,9 +60,11 @@ class _JokeWidgetState extends State<JokeWidget> {
                         )
                       ],
                     );
-                  } else {
+                  } else if(snapshot.hasError) {
                     return Text(
                         'Oups! Something has gone terribly wrong. Please try again later.');
+                  } else {
+                    return Container();
                   }
                 },
               );
