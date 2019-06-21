@@ -23,7 +23,9 @@ class _JokeWidgetState extends State<JokeWidget> {
     });
 
     final snackBar = SnackBar(
-      content: joke.isFavorite ? Text('Joke added to favorites.') : Text('Joke removed from favorites'),
+      content: joke.isFavorite
+          ? Text('Joke added to favorites.')
+          : Text('Joke removed from favorites'),
     );
     Scaffold.of(context).showSnackBar(snackBar);
   }
@@ -33,29 +35,37 @@ class _JokeWidgetState extends State<JokeWidget> {
     return Center(
       child: Container(
         padding: EdgeInsets.all(25.0),
-        child: StreamBuilder<Joke>(
-          stream: BlocProvider.of(context).bloc.joke,
+        child: StreamBuilder<bool>(
+          stream: BlocProvider.of(context).bloc.isLoadingJoke,
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    snapshot.data.joke,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  IconButton(
-                    icon: (snapshot.data.isFavorite
-                        ? Icon(Icons.favorite)
-                        : Icon(Icons.favorite_border)),
-                    onPressed: () => _handleFavorite(snapshot.data),
-                    color: Colors.red,
-                  )
-                ],
+            if (snapshot.hasData && !snapshot.data) {
+              return StreamBuilder<Joke>(
+                stream: BlocProvider.of(context).bloc.joke,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          snapshot.data.joke,
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        IconButton(
+                          icon: (snapshot.data.isFavorite
+                              ? Icon(Icons.favorite)
+                              : Icon(Icons.favorite_border)),
+                          onPressed: () => _handleFavorite(snapshot.data),
+                          color: Colors.red,
+                        )
+                      ],
+                    );
+                  } else {
+                    return Text(
+                        'Oups! Something has gone terribly wrong. Please try again later.');
+                  }
+                },
               );
-            } else if (snapshot.hasError) {
-              return NoConnectionWidget();
             } else {
               return CircularProgressIndicator();
             }

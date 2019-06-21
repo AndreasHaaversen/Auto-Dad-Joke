@@ -16,6 +16,9 @@ class JokeBloc {
   Stream<Joke> get joke => _jokeSubject.stream;
   final _jokeSubject = BehaviorSubject<Joke>();
 
+  Stream<bool> get isLoadingJoke => _jokeLoadingSubject.stream;
+  final _jokeLoadingSubject = BehaviorSubject<bool>();
+
   StreamController<Joke> _cmdController = StreamController<Joke>.broadcast();
   StreamSink get getJoke => _cmdController.sink;
 
@@ -24,6 +27,9 @@ class JokeBloc {
 
   Stream<List<Joke>> get jokes => _jokeListSubject.stream;
   final _jokeListSubject = BehaviorSubject<List<Joke>>();
+
+  Stream<bool> get isLoadingJokeList => _jokeListLoadingSubject.stream;
+  final _jokeListLoadingSubject = BehaviorSubject<bool>();
 
   JokeBloc() {
     _updateJoke().then((_) {
@@ -48,6 +54,7 @@ class JokeBloc {
   }
 
   Future<Null> _updateJoke() async {
+    _jokeLoadingSubject.add(true);
     final response = await http.get('https://icanhazdadjoke.com/', headers: {
       'Accept': 'application/json',
       'User-Agent': 'Auto Dad Joke, andreas.h.haaversen@gmail.com'
@@ -60,9 +67,11 @@ class JokeBloc {
       }
       _joke = tmpJoke;
     }
+    _jokeLoadingSubject.add(false);
   }
 
   Future<Null> _updateJokeList() async {
+    _jokeListLoadingSubject.add(true);
     final List<Joke> response = await DBProvider.db.getAllJokes();
     if (response != null) {
         response.forEach((joke) => joke.isFavorite = true);
@@ -70,6 +79,7 @@ class JokeBloc {
     } else {
       _jokeList = [];
     }
+    _jokeListLoadingSubject.add(false);
   }
 
   dispose() {
