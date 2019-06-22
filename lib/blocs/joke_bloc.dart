@@ -85,6 +85,8 @@ class JokeBloc {
     _jokeListSubject.close();
     _cmdController.close();
     _listCmdController.close();
+    _jokeLoadingSubject.close();
+    _jokeListLoadingSubject.close();
   }
 
   Future<bool> _checkFavorite(Joke joke) async {
