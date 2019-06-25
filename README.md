@@ -1,16 +1,13 @@
-# auto_dad_joke
+# Auto Dad Joke
 
-A new Flutter project.
+A simple Flutter app that lets its user find their favorite dad jokes, uning the [icanhazdadjoke API](https://icanhazdadjoke.com/).
 
-## Getting Started
+It lets the user save the best jokes they find to their device.
 
-This project is a starting point for a Flutter application.
+## Built with;
 
-A few resources to get you started if this is your first Flutter project:
+- [http](https://pub.dev/packages/http#-installing-tab-)
+- [RxDart](https://pub.dev/packages/rxdart)
+- [SQFLite](https://pub.dev/packages/sqflite)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+- The Bloc pattern
