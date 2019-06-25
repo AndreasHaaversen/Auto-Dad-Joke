@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:auto_dad_joke/models/joke.dart';
 import 'package:flutter/widgets.dart';
@@ -19,10 +20,14 @@ class JokeBloc {
   Stream<bool> get isLoadingJoke => _jokeLoadingSubject.stream;
   final _jokeLoadingSubject = BehaviorSubject<bool>();
 
+  Stream<bool> get isNetworkError => _networkErrorSubject.stream;
+  final _networkErrorSubject = BehaviorSubject<bool>();
+
   StreamController<Joke> _cmdController = StreamController<Joke>.broadcast();
   StreamSink get getJoke => _cmdController.sink;
 
-  StreamController<Joke> _listCmdController = StreamController<Joke>.broadcast();
+  StreamController<Joke> _listCmdController =
+      StreamController<Joke>.broadcast();
   StreamSink get getJokeList => _listCmdController.sink;
 
   Stream<List<Joke>> get jokes => _jokeListSubject.stream;
@@ -43,9 +48,9 @@ class JokeBloc {
     });
 
     _listCmdController.stream.listen((_) {
-       _updateJokeList().then((_) {
-          _jokeListSubject.add(_jokeList);
-        });
+      _updateJokeList().then((_) {
+        _jokeListSubject.add(_jokeList);
+      });
     });
 
     _updateJokeList().then((_) {
@@ -55,17 +60,22 @@ class JokeBloc {
 
   Future<Null> _updateJoke() async {
     _jokeLoadingSubject.add(true);
-    final response = await http.get('https://icanhazdadjoke.com/', headers: {
-      'Accept': 'application/json',
-      'User-Agent': 'Auto Dad Joke, andreas.h.haaversen@gmail.com'
-    }).catchError((onError) => throw Exception(onError));
-    if (response.statusCode == 200) {
-      Joke tmpJoke = Joke.fromJson(json.decode(response.body));
-      bool isFavorite = await _checkFavorite(tmpJoke);
-      if (isFavorite) {
-        tmpJoke.isFavorite = true;
+    _networkErrorSubject.add(false);
+    try {
+      final response = await http.get('https://icanhazdadjoke.com/', headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'Auto Dad Joke, andreas.h.haaversen@gmail.com'
+      });
+      if (response.statusCode == 200) {
+        Joke tmpJoke = Joke.fromJson(json.decode(response.body));
+        bool isFavorite = await _checkFavorite(tmpJoke);
+        if (isFavorite) {
+          tmpJoke.isFavorite = true;
+        }
+        _joke = tmpJoke;
       }
-      _joke = tmpJoke;
+    } on SocketException catch (_) {
+      _networkErrorSubject.add(true);
     }
     _jokeLoadingSubject.add(false);
   }
@@ -73,8 +83,8 @@ class JokeBloc {
   Future<Null> _updateJokeList() async {
     final List<Joke> response = await DBProvider.db.getAllJokes();
     if (response != null) {
-        response.forEach((joke) => joke.isFavorite = true);
-        _jokeList = response;
+      response.forEach((joke) => joke.isFavorite = true);
+      _jokeList = response;
     } else {
       _jokeList = [];
     }
@@ -87,6 +97,7 @@ class JokeBloc {
     _listCmdController.close();
     _jokeLoadingSubject.close();
     _jokeListLoadingSubject.close();
+    _networkErrorSubject.close();
   }
 
   Future<bool> _checkFavorite(Joke joke) async {

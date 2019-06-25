@@ -36,39 +36,49 @@ class _JokeWidgetState extends State<JokeWidget> {
       child: Container(
         padding: EdgeInsets.all(25.0),
         child: StreamBuilder<bool>(
-          stream: BlocProvider.of(context).bloc.isLoadingJoke,
+          stream: BlocProvider.of(context).bloc.isNetworkError,
+          initialData: false,
           builder: (context, snapshot) {
-            if (snapshot.hasData && !snapshot.data) {
-              return StreamBuilder<Joke>(
-                stream: BlocProvider.of(context).bloc.joke,
+            if (!snapshot.data) {
+              return StreamBuilder<bool>(
+                stream: BlocProvider.of(context).bloc.isLoadingJoke,
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          snapshot.data.joke,
-                        ),
-                        IconButton(
-                          icon: (snapshot.data.isFavorite
-                              ? Icon(Icons.favorite)
-                              : Icon(Icons.favorite_border)),
-                          onPressed: () => _handleFavorite(snapshot.data),
-                          color: Colors.red,
-                        )
-                      ],
+                  if (snapshot.hasData && !snapshot.data) {
+                    return StreamBuilder<Joke>(
+                      stream: BlocProvider.of(context).bloc.joke,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                snapshot.data.joke,
+                              ),
+                              IconButton(
+                                icon: (snapshot.data.isFavorite
+                                    ? Icon(Icons.favorite)
+                                    : Icon(Icons.favorite_border)),
+                                onPressed: () => _handleFavorite(snapshot.data),
+                                color: Colors.red,
+                              )
+                            ],
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text(
+                              'Oups! Something has gone terribly wrong. Please try again later.');
+                        } else {
+                          return Container();
+                        }
+                      },
                     );
-                  } else if(snapshot.hasError) {
-                    return Text(
-                        'Oups! Something has gone terribly wrong. Please try again later.');
                   } else {
-                    return Container();
+                    return CircularProgressIndicator();
                   }
                 },
               );
             } else {
-              return CircularProgressIndicator();
+              return NoConnectionWidget();
             }
           },
         ),
