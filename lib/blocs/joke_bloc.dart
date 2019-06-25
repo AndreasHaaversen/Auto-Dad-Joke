@@ -64,7 +64,7 @@ class JokeBloc {
     try {
       final response = await http.get('https://icanhazdadjoke.com/', headers: {
         'Accept': 'application/json',
-        'User-Agent': 'Auto Dad Joke, andreas.h.haaversen@gmail.com'
+        'User-Agent': 'Auto Dad Joke, https://github.com/AndreasHaaversen/Auto-Dad-Joke'
       });
       if (response.statusCode == 200) {
         Joke tmpJoke = Joke.fromJson(json.decode(response.body));
