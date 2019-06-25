@@ -3,10 +3,10 @@ import 'package:auto_dad_joke/widgets/joke.dart';
 import 'package:auto_dad_joke/widgets/joke_list.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(AutoDadJoke());
 
-class MyApp extends StatelessWidget {
-  MyApp({Key key}) : super(key: key);
+class AutoDadJoke extends StatelessWidget {
+  AutoDadJoke({Key key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
