@@ -13,10 +13,8 @@ class _JokeWidgetState extends State<JokeWidget> {
     setState(() {
       if (!joke.isFavorite) {
         DBProvider.db.saveJoke(joke);
-        print("Saving");
       } else {
         DBProvider.db.deleteJoke(joke.id);
-        print("deleting");
       }
       BlocProvider.of(context).bloc.getJokeList.add(null);
       joke.isFavorite = !joke.isFavorite;
