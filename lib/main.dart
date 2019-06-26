@@ -64,14 +64,12 @@ class _MyHomePageState extends State<MyHomePage> {
               title: Text('Favorite jokes'), icon: Icon(Icons.list))
         ],
         onTap: (index) {
-          setState(
-            () {
-              _currentIndex = index;
-              if (index == 0) {
-                BlocProvider.of(context).bloc.getJoke.add(JokeType.refreshJoke);
-              }
-            },
-          );
+          setState(() {
+            _currentIndex = index;
+            if (index == 0) {
+              BlocProvider.of(context).bloc.getJoke.add(JokeType.refreshJoke);
+            }
+          });
         },
       ),
       floatingActionButton: _currentIndex == 0
