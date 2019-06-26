@@ -9,10 +9,7 @@ import 'package:rxdart/rxdart.dart';
 
 import 'database.dart';
 
-enum JokeType {
-  newJoke,
-  refreshJoke
-}
+enum JokeType { newJoke, refreshJoke }
 
 class JokeBloc {
   Joke _joke;
@@ -28,7 +25,8 @@ class JokeBloc {
   Stream<bool> get isNetworkError => _networkErrorSubject.stream;
   final _networkErrorSubject = BehaviorSubject<bool>();
 
-  StreamController<JokeType> _cmdController = StreamController<JokeType>.broadcast();
+  StreamController<JokeType> _cmdController =
+      StreamController<JokeType>.broadcast();
   StreamSink get getJoke => _cmdController.sink;
 
   StreamController<Joke> _listCmdController =
@@ -48,14 +46,14 @@ class JokeBloc {
 
     _cmdController.stream.listen((value) {
       if (value == JokeType.newJoke) {
-      _updateJoke().then((_) {
-        _jokeSubject.sink.add(_joke);
-      });
+        _updateJoke().then((_) {
+          _jokeSubject.sink.add(_joke);
+        });
       } else if (value == JokeType.refreshJoke) {
         _checkFavorite(_joke).then((value) {
           _joke.isFavorite = value;
           _jokeSubject.sink.add(_joke);
-          });
+        });
       }
     });
 
@@ -76,7 +74,8 @@ class JokeBloc {
     try {
       final response = await http.get('https://icanhazdadjoke.com/', headers: {
         'Accept': 'application/json',
-        'User-Agent': 'Auto Dad Joke, https://github.com/AndreasHaaversen/Auto-Dad-Joke'
+        'User-Agent':
+            'Auto Dad Joke, https://github.com/AndreasHaaversen/Auto-Dad-Joke'
       });
       if (response.statusCode == 200) {
         Joke tmpJoke = Joke.fromJson(json.decode(response.body));
