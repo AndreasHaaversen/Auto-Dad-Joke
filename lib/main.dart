@@ -16,12 +16,9 @@ class AutoDadJoke extends StatelessWidget {
       child: MaterialApp(
         title: 'Auto Dad Joke',
         theme: ThemeData(
-          primarySwatch: Colors.amber,
-          fontFamily: 'Roboto',
-          textTheme: TextTheme(
-            body1: TextStyle(fontSize: 20)
-          )
-        ),
+            primarySwatch: Colors.amber,
+            fontFamily: 'Roboto',
+            textTheme: TextTheme(body1: TextStyle(fontSize: 20))),
         home: MyHomePage(title: 'Auto Dad Joke'),
       ),
     );
@@ -67,14 +64,20 @@ class _MyHomePageState extends State<MyHomePage> {
               title: Text('Favorite jokes'), icon: Icon(Icons.list))
         ],
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          setState(
+            () {
+              _currentIndex = index;
+              if (index == 0) {
+                BlocProvider.of(context).bloc.getJoke.add(JokeType.refreshJoke);
+              }
+            },
+          );
         },
       ),
       floatingActionButton: _currentIndex == 0
           ? FloatingActionButton.extended(
-              onPressed: () => BlocProvider.of(context).bloc.getJoke.add(null),
+              onPressed: () =>
+                  BlocProvider.of(context).bloc.getJoke.add(JokeType.newJoke),
               tooltip: 'New joke',
               icon: Icon(
                 Icons.insert_emoticon,
