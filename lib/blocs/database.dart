@@ -32,7 +32,8 @@ class DBProvider {
 
   Future<int> saveJoke(Joke joke) async {
     final db = await database;
-    var res = await db.insert("Joke", joke.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    var res = await db.insert("Joke", joke.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
     return res;
   }
 
@@ -45,12 +46,19 @@ class DBProvider {
   Future<List<Joke>> getAllJokes() async {
     final db = await database;
     var res = await db.query("Joke", orderBy: 'id');
-    List<Joke> list = res.isNotEmpty ? res.toList().map((f) => Joke.fromJson(f)).toList() : null;
+    List<Joke> list = res.isNotEmpty
+        ? res.toList().map((f) => Joke.fromJson(f)).toList()
+        : null;
     return list;
   }
 
   Future<int> deleteJoke(String id) async {
     final db = await database;
     return db.delete("Joke", where: "id = ?", whereArgs: [id]);
+  }
+
+  Future<int> indexOfSavedJoke(String id) async {
+    List<Joke> res = await getAllJokes();
+    return res.map((joke) => joke.id).toList().indexOf(id);
   }
 }

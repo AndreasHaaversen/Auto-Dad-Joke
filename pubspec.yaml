@@ -16,6 +16,8 @@ dependencies:
   path: ^1.6.2
   path_provider: ^1.1.0
 
+  animated_stream_list: ^0.0.5
+
   rxdart: ^0.22.0
 
   cupertino_icons: ^0.1.2

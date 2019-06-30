@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class Joke {
+class Joke implements Comparable<Joke>{
   final String id;
   final String joke;
   bool isFavorite;
@@ -17,6 +17,17 @@ class Joke {
         "id": id,
         "joke": joke,
       };
+
+  @override
+  int compareTo(Joke other) {
+    return this.id.compareTo(other.id);
+  }
+
+  @override
+  bool operator ==(other) => other is Joke && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 Joke jokeFromJson(String str) {
