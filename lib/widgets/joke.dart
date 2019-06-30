@@ -3,6 +3,8 @@ import 'package:auto_dad_joke/blocs/joke_bloc.dart';
 import 'package:auto_dad_joke/models/joke.dart';
 import 'package:flutter/material.dart';
 
+import 'show_up.dart';
+
 class JokeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class JokeWidget extends StatelessWidget {
                 stream: BlocProvider.of(context).bloc.isLoadingJoke,
                 builder: (context, snapshot) {
                   if (snapshot.hasData && !snapshot.data) {
-                    return JokeWidgetCard();
+                    return FadeIn(child: JokeWidgetCard());
                   } else {
                     return CircularProgressIndicator();
                   }
