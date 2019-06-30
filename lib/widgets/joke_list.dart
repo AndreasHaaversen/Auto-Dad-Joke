@@ -66,6 +66,7 @@ class _JokeListWidgetState extends State<JokeListWidget> {
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data.isEmpty) {
                   return ShowUp(
+                    key: GlobalKey(),
                     delay: 500,
                     child: Text(
                       "There is nothing here!\nAdd favorites with the heart.",
@@ -74,7 +75,6 @@ class _JokeListWidgetState extends State<JokeListWidget> {
                   );
                 } else if (snapshot.hasData && snapshot.data.isNotEmpty) {
                   return ShowUp(
-                    key: GlobalKey(),
                     delay: 500,
                     child: Text(
                       "Favorites",
