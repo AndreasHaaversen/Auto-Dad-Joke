@@ -3,12 +3,47 @@ import 'package:auto_dad_joke/blocs/joke_bloc.dart';
 import 'package:auto_dad_joke/models/joke.dart';
 import 'package:flutter/material.dart';
 
-class JokeWidget extends StatefulWidget {
+class JokeWidget extends StatelessWidget {
   @override
-  State<StatefulWidget> createState() => _JokeWidgetState();
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        padding: EdgeInsets.all(25.0),
+        child: StreamBuilder<bool>(
+          stream: BlocProvider.of(context).bloc.isNetworkError,
+          initialData: false,
+          builder: (context, snapshot) {
+            if (!snapshot.data) {
+              return StreamBuilder<bool>(
+                stream: BlocProvider.of(context).bloc.isLoadingJoke,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && !snapshot.data) {
+                    return JokeWidgetCard();
+                  } else {
+                    return CircularProgressIndicator();
+                  }
+                },
+              );
+            } else {
+              return NoConnectionWidget();
+            }
+          },
+        ),
+      ),
+    );
+  }
 }
 
-class _JokeWidgetState extends State<JokeWidget> {
+class JokeWidgetCard extends StatefulWidget {
+  const JokeWidgetCard({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  _JokeWidgetCardState createState() => _JokeWidgetCardState();
+}
+
+class _JokeWidgetCardState extends State<JokeWidgetCard> {
   void _handleFavorite(Joke joke) {
     setState(() {
       if (!joke.isFavorite) {
@@ -30,57 +65,33 @@ class _JokeWidgetState extends State<JokeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        padding: EdgeInsets.all(25.0),
-        child: StreamBuilder<bool>(
-          stream: BlocProvider.of(context).bloc.isNetworkError,
-          initialData: false,
-          builder: (context, snapshot) {
-            if (!snapshot.data) {
-              return StreamBuilder<bool>(
-                stream: BlocProvider.of(context).bloc.isLoadingJoke,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData && !snapshot.data) {
-                    return StreamBuilder<Joke>(
-                      stream: BlocProvider.of(context).bloc.joke,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                snapshot.data.joke,
-                              ),
-                              IconButton(
-                                icon: (snapshot.data.isFavorite
-                                    ? Icon(Icons.favorite)
-                                    : Icon(Icons.favorite_border)),
-                                onPressed: () => _handleFavorite(snapshot.data),
-                                color: Colors.red,
-                              )
-                            ],
-                          );
-                        } else if (snapshot.hasError) {
-                          return Text(
-                              'Oups! Something has gone terribly wrong. Please try again later.');
-                        } else {
-                          return Container();
-                        }
-                      },
-                    );
-                  } else {
-                    return CircularProgressIndicator();
-                  }
-                },
-              );
-            } else {
-              return NoConnectionWidget();
-            }
-          },
-        ),
-      ),
+    return StreamBuilder<Joke>(
+      stream: BlocProvider.of(context).bloc.joke,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                snapshot.data.joke,
+              ),
+              IconButton(
+                icon: snapshot.data.isFavorite
+                    ? Icon(Icons.favorite)
+                    : Icon(Icons.favorite_border),
+                onPressed: () => _handleFavorite(snapshot.data),
+                color: Colors.red,
+              )
+            ],
+          );
+        } else if (snapshot.hasError) {
+          return Text(
+              'Oups! Something has gone terribly wrong. Please try again later.');
+        } else {
+          return Container();
+        }
+      },
     );
   }
 }

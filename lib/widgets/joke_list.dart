@@ -9,50 +9,12 @@ class JokeListWidget extends StatefulWidget {
 }
 
 class _JokeListWidgetState extends State<JokeListWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        child: Scrollbar(
-          child: Padding(
-            padding: const EdgeInsets.all(25.0),
-            child: StreamBuilder<List<Joke>>(
-              stream: BlocProvider.of(context).bloc.jokes,
-              initialData: [],
-              builder: ((context, snapshot) {
-                if (snapshot.hasData && snapshot.data.isNotEmpty) {
-                  return ListView.builder(
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (context, index) {
-                      return JokeListCard(
-                        joke: snapshot.data[index],
-                        favoriteHandler: _handleFavorite,
-                      );
-                    },
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('Oups, an error has occured!');
-                } else if (snapshot.connectionState == ConnectionState.active && snapshot.data.isEmpty) {
-                  return Text('Oups!\nThere is nothing here yet.\nGo add some favorites!', textAlign: TextAlign.center,);
-                } else {
-                  return CircularProgressIndicator();
-                }
-              }),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   void _handleFavorite(Joke handleJoke) {
     setState(() {
       if (!handleJoke.isFavorite) {
         DBProvider.db.saveJoke(handleJoke);
-        print("Saving");
       } else {
         DBProvider.db.deleteJoke(handleJoke.id);
-        print("deleting");
       }
       BlocProvider.of(context).bloc.getJokeList.add(null);
       handleJoke.isFavorite = !handleJoke.isFavorite;
@@ -68,6 +30,46 @@ class _JokeListWidgetState extends State<JokeListWidget> {
           : null,
     );
     Scaffold.of(context).showSnackBar(snackBar);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        child: Scrollbar(
+          child: Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: StreamBuilder<List<Joke>>(
+              stream: BlocProvider.of(context).bloc.jokes,
+              initialData: [],
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data.isNotEmpty) {
+                  return ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return JokeListCard(
+                        joke: snapshot.data[index],
+                        favoriteHandler: _handleFavorite,
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('Oups, an error has occured!');
+                } else if (snapshot.connectionState == ConnectionState.active &&
+                    snapshot.data.isEmpty) {
+                  return Text(
+                    'Oups!\nThere is nothing here yet.\nGo add some favorites!',
+                    textAlign: TextAlign.center,
+                  );
+                } else {
+                  return CircularProgressIndicator();
+                }
+              },
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
