@@ -10,7 +10,7 @@ class JokeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(25.0),
+        padding: const EdgeInsets.all(25.0),
         child: StreamBuilder<bool>(
           stream: BlocProvider.of(context).bloc.isNetworkError,
           initialData: false,

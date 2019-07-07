@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
           style: TextStyle(color: Colors.white),
         ),
         leading: Padding(
-          padding: EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(10.0),
           child: Image.asset('assets/smiley.png', fit: BoxFit.contain),
         ),
       ),
