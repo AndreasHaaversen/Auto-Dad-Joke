@@ -27,7 +27,7 @@ class JokeWidget extends StatelessWidget {
                 },
               );
             } else {
-              return NoConnectionWidget();
+              return FadeIn(child: NoConnectionWidget());
             }
           },
         ),
