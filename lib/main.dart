@@ -47,10 +47,6 @@ class _MyHomePageState extends State<MyHomePage> {
           widget.title,
           style: TextStyle(color: Colors.white),
         ),
-        leading: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Image.asset('assets/smiley.png', fit: BoxFit.contain),
-        ),
       ),
       body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
