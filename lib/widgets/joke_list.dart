@@ -69,7 +69,7 @@ class _JokeListWidgetState extends State<JokeListWidget> {
                     key: GlobalKey(),
                     delay: 500,
                     child: Text(
-                      "There is nothing here!\nAdd favorites with the heart.",
+                      "There is nothing here yet!\nAdd some favorites first.",
                       textAlign: TextAlign.center,
                     ),
                   );
