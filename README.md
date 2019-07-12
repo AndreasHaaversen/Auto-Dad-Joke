@@ -1,6 +1,6 @@
 # Auto Dad Joke
 
-A simple Flutter app that lets its user find their favorite dad jokes, uning the [icanhazdadjoke API](https://icanhazdadjoke.com/).
+A simple Flutter app that lets its user find their favorite dad jokes, using the [icanhazdadjoke API](https://icanhazdadjoke.com/).
 
 It lets the user save the best jokes they find to their device.
 
