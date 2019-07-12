@@ -5,7 +5,7 @@ import 'package:animated_stream_list/animated_stream_list.dart';
 
 import 'package:flutter/material.dart';
 
-import 'show_up.dart';
+import 'animators/show_up.dart';
 
 class JokeListWidget extends StatefulWidget {
   @override

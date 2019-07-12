@@ -3,7 +3,7 @@ import 'package:auto_dad_joke/blocs/joke_bloc.dart';
 import 'package:auto_dad_joke/models/joke.dart';
 import 'package:flutter/material.dart';
 
-import 'show_up.dart';
+import 'animators/fade_in.dart';
 
 class JokeWidget extends StatelessWidget {
   @override
