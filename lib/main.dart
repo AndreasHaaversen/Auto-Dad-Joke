@@ -2,6 +2,7 @@ import 'package:auto_dad_joke/blocs/joke_bloc.dart';
 import 'package:auto_dad_joke/widgets/joke.dart';
 import 'package:auto_dad_joke/widgets/joke_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 void main() => runApp(AutoDadJoke());
 
@@ -36,12 +37,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
-
-  final List<Widget> _children = [JokeWidget(), JokeListWidget()];
+  GlobalKey _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _children = [
+      JokeWidget(
+        scaffoldKey: _scaffoldKey,
+      ),
+      JokeListWidget(
+        scaffoldKey: _scaffoldKey,
+      )
+    ];
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(
           widget.title,

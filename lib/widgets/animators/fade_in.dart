@@ -13,7 +13,6 @@ class FadeIn extends StatefulWidget {
 
 class _FadeInState extends State<FadeIn> with TickerProviderStateMixin {
   AnimationController _animController;
-  Animation<double> _animOffset;
 
   @override
   void initState() {
@@ -21,7 +20,7 @@ class _FadeInState extends State<FadeIn> with TickerProviderStateMixin {
 
     _animController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-    _animOffset = Tween<double>(
+    Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(_animController);

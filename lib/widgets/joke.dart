@@ -6,6 +6,10 @@ import 'package:flutter/material.dart';
 import 'animators/fade_in.dart';
 
 class JokeWidget extends StatelessWidget {
+  final GlobalKey<ScaffoldState> scaffoldKey;
+
+  const JokeWidget({Key key, this.scaffoldKey}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -20,7 +24,10 @@ class JokeWidget extends StatelessWidget {
                 stream: BlocProvider.of(context).bloc.isLoadingJoke,
                 builder: (context, snapshot) {
                   if (snapshot.hasData && !snapshot.data) {
-                    return FadeIn(child: JokeWidgetCard());
+                    return FadeIn(
+                        child: JokeWidgetCard(
+                      scaffoldKey: scaffoldKey,
+                    ));
                   } else {
                     return CircularProgressIndicator();
                   }
@@ -37,8 +44,11 @@ class JokeWidget extends StatelessWidget {
 }
 
 class JokeWidgetCard extends StatefulWidget {
+  final GlobalKey<ScaffoldState> scaffoldKey;
+
   const JokeWidgetCard({
     Key key,
+    this.scaffoldKey,
   }) : super(key: key);
 
   @override
@@ -46,23 +56,24 @@ class JokeWidgetCard extends StatefulWidget {
 }
 
 class _JokeWidgetCardState extends State<JokeWidgetCard> {
-  void _handleFavorite(Joke joke) {
+  void _handleFavorite(Joke joke) async {
+    if (!joke.isFavorite) {
+      await DBProvider.db.saveJoke(joke);
+    } else {
+      await DBProvider.db.deleteJoke(joke.id);
+    }
     setState(() {
-      if (!joke.isFavorite) {
-        DBProvider.db.saveJoke(joke);
-      } else {
-        DBProvider.db.deleteJoke(joke.id);
-      }
       BlocProvider.of(context).bloc.getJokeList.add(null);
-      joke.isFavorite = !joke.isFavorite;
     });
+
+    joke.isFavorite = !joke.isFavorite;
 
     final snackBar = SnackBar(
       content: joke.isFavorite
           ? Text('Joke added to favorites.')
           : Text('Joke removed from favorites'),
     );
-    Scaffold.of(context).showSnackBar(snackBar);
+    widget.scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
   @override

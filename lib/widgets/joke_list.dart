@@ -8,21 +8,30 @@ import 'package:flutter/material.dart';
 import 'animators/show_up.dart';
 
 class JokeListWidget extends StatefulWidget {
+  final GlobalKey<ScaffoldState> scaffoldKey;
+
+  JokeListWidget({Key key, this.scaffoldKey}) : super(key: key);
+
   @override
   _JokeListWidgetState createState() => _JokeListWidgetState();
 }
 
 class _JokeListWidgetState extends State<JokeListWidget> {
-  void _handleFavorite(Joke handleJoke) {
-    setState(() {
-      if (!handleJoke.isFavorite) {
-        DBProvider.db.saveJoke(handleJoke);
-      } else {
-        DBProvider.db.deleteJoke(handleJoke.id);
-      }
-      BlocProvider.of(context).bloc.getJokeList.add(null);
-      handleJoke.isFavorite = !handleJoke.isFavorite;
-    });
+  void _handleFavorite(Joke handleJoke) async {
+    if (!handleJoke.isFavorite) {
+      await DBProvider.db.saveJoke(handleJoke);
+    } else {
+      await DBProvider.db.deleteJoke(handleJoke.id);
+    }
+
+    BlocProvider.of(widget.scaffoldKey.currentContext)
+          .bloc
+          .getJokeList
+          .add(null);
+
+    if (this.mounted) setState(() {});
+
+    handleJoke.isFavorite = !handleJoke.isFavorite;
 
     final snackBar = SnackBar(
       content: handleJoke.isFavorite
@@ -33,7 +42,7 @@ class _JokeListWidgetState extends State<JokeListWidget> {
               label: 'Undo', onPressed: () => _handleFavorite(handleJoke))
           : null,
     );
-    Scaffold.of(context).showSnackBar(snackBar);
+    widget.scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
   Widget _buildStreamList(Stream<List<Joke>> jokeListStream) {
