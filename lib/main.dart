@@ -82,6 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 'New joke',
                 style: TextStyle(color: Colors.white),
               ),
+              backgroundColor: Colors.amber,
             )
           : null, // This trailing comma makes auto-formatting nicer for build methods.
     );
