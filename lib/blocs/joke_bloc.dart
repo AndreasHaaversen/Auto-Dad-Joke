@@ -11,11 +11,9 @@ import 'database.dart';
 
 enum JokeType { newJoke, refreshJoke }
 
+enum JokeListType { newJokeList, refreshJokeList }
+
 class JokeBloc {
-  Joke _joke;
-
-  List<Joke> _jokeList = [];
-
   Stream<Joke> get joke => _jokeSubject.stream;
   final _jokeSubject = BehaviorSubject<Joke>();
 
@@ -29,8 +27,8 @@ class JokeBloc {
       StreamController<JokeType>.broadcast();
   StreamSink get getJoke => _cmdController.sink;
 
-  StreamController<Joke> _listCmdController =
-      StreamController<Joke>.broadcast();
+  StreamController<JokeListType> _listCmdController =
+      StreamController<JokeListType>.broadcast();
   StreamSink get getJokeList => _listCmdController.sink;
 
   Stream<List<Joke>> get jokes => _jokeListSubject.stream;
@@ -40,39 +38,41 @@ class JokeBloc {
   final _jokeListLoadingSubject = BehaviorSubject<bool>();
 
   JokeBloc() {
-    _updateJoke().then((_) {
-      _jokeSubject.add(_joke);
+    _updateJoke().then((joke) {
+      if (joke != null) _jokeSubject.add(joke);
     });
 
-    _cmdController.stream.listen((value) {
+    _cmdController.stream.listen((value) async {
       if (value == JokeType.newJoke) {
-        _updateJoke().then((_) {
-          _jokeSubject.sink.add(_joke);
-        });
+        final joke = await _updateJoke();
+        if (joke != null) _jokeSubject.sink.add(joke);
       } else if (value == JokeType.refreshJoke) {
-        _checkFavorite(_joke).then((value) {
-          _joke.isFavorite = value;
-          _jokeSubject.sink.add(_joke);
-        });
+        final currentJoke = _jokeSubject.valueOrNull;
+        if (currentJoke != null) {
+          final isFavorite = await _checkFavorite(currentJoke);
+          currentJoke.isFavorite = isFavorite;
+          _jokeSubject.sink.add(currentJoke);
+        }
       }
     });
 
-    _listCmdController.stream.listen((_) {
-      _updateJokeList().then((_) {
-        _jokeListSubject.add(_jokeList);
-      });
-    });
-
-    _updateJokeList().then((_) {
-      _jokeListSubject.add(_jokeList);
+    _listCmdController.stream.listen((value) async {
+      if (value == JokeListType.newJokeList) {
+        final newList = await _updateJokeList();
+        _jokeListSubject.add(newList);
+      } else if (value == JokeListType.refreshJokeList) {
+        final newList = await _updateJokeList();
+        _jokeListSubject.add(newList);
+      }
     });
   }
 
-  Future<Null> _updateJoke() async {
+  Future<Joke?> _updateJoke() async {
     _jokeLoadingSubject.add(true);
     _networkErrorSubject.add(false);
     try {
-      final response = await http.get('https://icanhazdadjoke.com/', headers: {
+      final response =
+          await http.get(Uri.parse('https://icanhazdadjoke.com/'), headers: {
         'Accept': 'application/json',
         'User-Agent':
             'Auto Dad Joke, https://github.com/AndreasHaaversen/Auto-Dad-Joke'
@@ -83,7 +83,7 @@ class JokeBloc {
         if (isFavorite) {
           tmpJoke.isFavorite = true;
         }
-        _joke = tmpJoke;
+        return tmpJoke;
       }
     } on SocketException catch (_) {
       _networkErrorSubject.add(true);
@@ -91,13 +91,13 @@ class JokeBloc {
     _jokeLoadingSubject.add(false);
   }
 
-  Future<Null> _updateJokeList() async {
+  Future<List<Joke>> _updateJokeList() async {
     final List<Joke> response = await DBProvider.db.getAllJokes();
-    if (response != null) {
+    if (response.isNotEmpty) {
       response.forEach((joke) => joke.isFavorite = true);
-      _jokeList = response;
+      return response;
     } else {
-      _jokeList = [];
+      return [];
     }
   }
 
@@ -121,10 +121,11 @@ class BlocProvider extends InheritedWidget {
   final JokeBloc bloc;
   final Widget child;
 
-  BlocProvider({this.bloc, this.child}) : super(child: child);
+  BlocProvider({required this.bloc, required this.child}) : super(child: child);
 
   static BlocProvider of(BuildContext context) =>
-      (context.inheritFromWidgetOfExactType(BlocProvider) as BlocProvider);
+      (context.dependOnInheritedWidgetOfExactType<BlocProvider>()
+          as BlocProvider);
 
   @override
   bool updateShouldNotify(BlocProvider oldWidget) {

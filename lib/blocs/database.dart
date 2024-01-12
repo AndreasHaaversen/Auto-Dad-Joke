@@ -8,11 +8,9 @@ class DBProvider {
   DBProvider._();
   static final DBProvider db = DBProvider._();
 
-  static Database _database;
+  static late Database _database;
 
   Future<Database> get database async {
-    if (_database != null) return _database;
-
     // if _database is null we instantiate it
     _database = await initDB();
     return _database;
@@ -37,7 +35,7 @@ class DBProvider {
     return res;
   }
 
-  Future<Joke> getJoke(String id) async {
+  Future<Joke?> getJoke(String id) async {
     final db = await database;
     var res = await db.query("Joke", where: "id = ?", whereArgs: [id]);
     return res.isNotEmpty ? Joke.fromJson(res.first) : null;
@@ -48,7 +46,7 @@ class DBProvider {
     var res = await db.query("Joke", orderBy: 'id');
     List<Joke> list = res.isNotEmpty
         ? res.toList().map((f) => Joke.fromJson(f)).toList()
-        : null;
+        : [];
     return list;
   }
 

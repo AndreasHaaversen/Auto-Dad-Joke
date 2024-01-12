@@ -2,12 +2,11 @@ import 'package:auto_dad_joke/blocs/joke_bloc.dart';
 import 'package:auto_dad_joke/widgets/joke.dart';
 import 'package:auto_dad_joke/widgets/joke_list.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 void main() => runApp(AutoDadJoke());
 
 class AutoDadJoke extends StatelessWidget {
-  AutoDadJoke({Key key}) : super(key: key);
+  AutoDadJoke({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -19,7 +18,7 @@ class AutoDadJoke extends StatelessWidget {
         theme: ThemeData(
             primarySwatch: Colors.amber,
             fontFamily: 'Roboto',
-            textTheme: TextTheme(body1: TextStyle(fontSize: 20))),
+            textTheme: TextTheme(bodyLarge: TextStyle(fontSize: 20))),
         home: MyHomePage(title: 'Auto Dad Joke'),
       ),
     );
@@ -27,7 +26,7 @@ class AutoDadJoke extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -41,14 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _children = [
-      JokeWidget(
-        scaffoldKey: _scaffoldKey,
-      ),
-      JokeListWidget(
-        scaffoldKey: _scaffoldKey,
-      )
-    ];
+    final List<Widget> _children = [JokeWidget(), JokeListWidget()];
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -64,9 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _currentIndex,
         items: [
           BottomNavigationBarItem(
-              title: Text('Joke'), icon: Icon(Icons.insert_emoticon)),
+              label: 'Joke', icon: Icon(Icons.insert_emoticon)),
           BottomNavigationBarItem(
-              title: Text('Favorite jokes'), icon: Icon(Icons.list))
+              label: 'Favorite jokes', icon: Icon(Icons.list))
         ],
         onTap: (index) {
           setState(() {

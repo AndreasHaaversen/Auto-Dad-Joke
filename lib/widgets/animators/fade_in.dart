@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
 class FadeIn extends StatefulWidget {
-  final Key key;
+  final Key? key;
   final Widget child;
   final int delay;
 
-  FadeIn({@required this.child, this.delay, this.key});
+  FadeIn({required this.child, required this.delay, this.key});
 
   @override
   _FadeInState createState() => _FadeInState();
 }
 
 class _FadeInState extends State<FadeIn> with TickerProviderStateMixin {
-  AnimationController _animController;
+  late AnimationController _animController;
 
   @override
   void initState() {

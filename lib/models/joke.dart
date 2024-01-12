@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-class Joke implements Comparable<Joke>{
+class Joke implements Comparable<Joke> {
   final String id;
   final String joke;
   bool isFavorite;
 
-  Joke({this.id, this.joke, this.isFavorite = false});
+  Joke({required this.id, required this.joke, this.isFavorite = false});
 
   factory Joke.fromJson(Map<String, dynamic> json) {
     return Joke(

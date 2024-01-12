@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'animators/fade_in.dart';
 
 class JokeWidget extends StatelessWidget {
-  final GlobalKey<ScaffoldState> scaffoldKey;
-
-  const JokeWidget({Key key, this.scaffoldKey}) : super(key: key);
+  const JokeWidget({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,23 +19,16 @@ class JokeWidget extends StatelessWidget {
           stream: BlocProvider.of(context).bloc.isNetworkError,
           initialData: false,
           builder: (context, snapshot) {
-            if (!snapshot.data) {
-              return StreamBuilder<bool>(
-                stream: BlocProvider.of(context).bloc.isLoadingJoke,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData && !snapshot.data) {
-                    return FadeIn(
-                        child: JokeWidgetCard(
-                      scaffoldKey: scaffoldKey,
-                    ));
-                  } else {
-                    return CircularProgressIndicator();
-                  }
-                },
-              );
-            } else {
-              return FadeIn(child: NoConnectionWidget());
-            }
+            return StreamBuilder<bool>(
+              stream: BlocProvider.of(context).bloc.isLoadingJoke,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return FadeIn(delay: 0, child: JokeWidgetCard());
+                } else {
+                  return CircularProgressIndicator();
+                }
+              },
+            );
           },
         ),
       ),
@@ -44,11 +37,8 @@ class JokeWidget extends StatelessWidget {
 }
 
 class JokeWidgetCard extends StatefulWidget {
-  final GlobalKey<ScaffoldState> scaffoldKey;
-
   const JokeWidgetCard({
-    Key key,
-    this.scaffoldKey,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -62,8 +52,13 @@ class _JokeWidgetCardState extends State<JokeWidgetCard> {
     } else {
       await DBProvider.db.deleteJoke(joke.id);
     }
+
     setState(() {
-      BlocProvider.of(context).bloc.getJokeList.add(null);
+      BlocProvider.of(context).bloc.getJoke.add(JokeType.refreshJoke);
+      BlocProvider.of(context)
+          .bloc
+          .getJokeList
+          .add(JokeListType.refreshJokeList);
     });
 
     joke.isFavorite = !joke.isFavorite;
@@ -73,7 +68,7 @@ class _JokeWidgetCardState extends State<JokeWidgetCard> {
           ? Text('Joke added to favorites.')
           : Text('Joke removed from favorites'),
     );
-    widget.scaffoldKey.currentState.showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
@@ -87,13 +82,13 @@ class _JokeWidgetCardState extends State<JokeWidgetCard> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                snapshot.data.joke,
+                snapshot.data!.joke,
               ),
               IconButton(
-                icon: snapshot.data.isFavorite
+                icon: snapshot.data!.isFavorite
                     ? Icon(Icons.favorite)
                     : Icon(Icons.favorite_border),
-                onPressed: () => _handleFavorite(snapshot.data),
+                onPressed: () => _handleFavorite(snapshot.data!),
                 color: Colors.red,
               )
             ],

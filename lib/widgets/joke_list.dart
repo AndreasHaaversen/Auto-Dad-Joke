@@ -1,16 +1,14 @@
+import 'package:animated_stream_list_nullsafety/animated_stream_list.dart';
 import 'package:auto_dad_joke/blocs/database.dart';
 import 'package:auto_dad_joke/blocs/joke_bloc.dart';
 import 'package:auto_dad_joke/models/joke.dart';
-import 'package:animated_stream_list/animated_stream_list.dart';
 
 import 'package:flutter/material.dart';
 
 import 'animators/show_up.dart';
 
 class JokeListWidget extends StatefulWidget {
-  final GlobalKey<ScaffoldState> scaffoldKey;
-
-  JokeListWidget({Key key, this.scaffoldKey}) : super(key: key);
+  JokeListWidget({Key? key}) : super(key: key);
 
   @override
   _JokeListWidgetState createState() => _JokeListWidgetState();
@@ -24,10 +22,7 @@ class _JokeListWidgetState extends State<JokeListWidget> {
       await DBProvider.db.deleteJoke(handleJoke.id);
     }
 
-    BlocProvider.of(widget.scaffoldKey.currentContext)
-          .bloc
-          .getJokeList
-          .add(null);
+    BlocProvider.of(context).bloc.getJokeList.add(JokeListType.refreshJokeList);
 
     if (this.mounted) setState(() {});
 
@@ -42,7 +37,7 @@ class _JokeListWidgetState extends State<JokeListWidget> {
               label: 'Undo', onPressed: () => _handleFavorite(handleJoke))
           : null,
     );
-    widget.scaffoldKey.currentState.showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   Widget _buildStreamList(Stream<List<Joke>> jokeListStream) {
@@ -51,15 +46,18 @@ class _JokeListWidgetState extends State<JokeListWidget> {
       itemBuilder: (Joke joke, int index, BuildContext context,
               Animation<double> animation) =>
           JokeListCard(
+              key: Key(joke.id),
               joke: joke,
               favoriteHandler: _handleFavorite,
               animation: animation),
       itemRemovedBuilder: (Joke joke, int index, BuildContext context,
               Animation<double> animation) =>
           JokeListCard(
-              joke: joke,
-              favoriteHandler: _handleFavorite,
-              animation: animation),
+        joke: joke,
+        favoriteHandler: _handleFavorite,
+        animation: animation,
+        key: Key(joke.id),
+      ),
       equals: (joke, other) => joke == other,
     );
   }
@@ -73,16 +71,15 @@ class _JokeListWidgetState extends State<JokeListWidget> {
           child: StreamBuilder<List<Joke>>(
               stream: BlocProvider.of(context).bloc.jokes,
               builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data.isEmpty) {
+                if (snapshot.hasData && snapshot.data!.isEmpty) {
                   return ShowUp(
-                    key: GlobalKey(),
                     delay: 500,
                     child: Text(
                       "There is nothing here yet!\nAdd some favorites first.",
                       textAlign: TextAlign.center,
                     ),
                   );
-                } else if (snapshot.hasData && snapshot.data.isNotEmpty) {
+                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                   return ShowUp(
                     delay: 500,
                     child: Text(
@@ -113,7 +110,11 @@ class JokeListCard extends StatefulWidget {
   final Function favoriteHandler;
   final Animation<double> animation;
 
-  const JokeListCard({Key key, this.joke, this.favoriteHandler, this.animation})
+  const JokeListCard(
+      {required Key key,
+      required this.joke,
+      required this.favoriteHandler,
+      required this.animation})
       : super(key: key);
 
   @override
